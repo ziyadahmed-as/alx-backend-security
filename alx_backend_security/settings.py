@@ -66,8 +66,15 @@ CACHES = {
 # IP Geolocation API Key (sign up at https://ipgeolocation.io/)
 IPGEOLOCATION_API_KEY = 'your_api_key_here'
 
-# settings.py
 
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULE = {
+    'detect-suspicious-ips-hourly': {
+        'task': 'ip_tracking.tasks.detect_suspicious_ips',
+        'schedule': 3600.0,  # Every hour
+    },
+}
 # Add to existing settings
 RATELIMIT_ENABLE = True
 RATELIMIT_VIEW = 'ip_tracking.views.rate_limit_exceeded'  # Custom view for rate limit errors

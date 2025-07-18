@@ -2,6 +2,29 @@
 from django.db import models
 from django.utils import timezone
 
+
+class SuspiciousIP(models.Model):
+    REASON_CHOICES = [
+        ('high_volume', 'High request volume'),
+        ('sensitive_path', 'Accessed sensitive paths'),
+        ('multiple_reasons', 'Multiple suspicious activities'),
+    ]
+    
+    ip_address = models.GenericIPAddressField(unique=True)
+    reason = models.CharField(max_length=50, choices=REASON_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.ip_address} ({self.get_reason_display()})"
+    
+    class Meta:
+        verbose_name = 'Suspicious IP'
+        verbose_name_plural = 'Suspicious IPs'
+        ordering = ['-created_at']
+
+# Add this to your existing RequestLog model if not present
+
 class RequestLog(models.Model):
     ip_address = models.GenericIPAddressField()
     timestamp = models.DateTimeField(default=timezone.now)
