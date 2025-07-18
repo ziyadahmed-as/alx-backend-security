@@ -49,7 +49,36 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ip_tracking.middleware.RequestLogMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',
+    'ip_tracking.middleware.RateLimitMiddleware',
 ]
+
+
+# Cache settings (using local memory cache for development)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# IP Geolocation API Key (sign up at https://ipgeolocation.io/)
+IPGEOLOCATION_API_KEY = 'your_api_key_here'
+
+# settings.py
+
+# Add to existing settings
+RATELIMIT_ENABLE = True
+RATELIMIT_VIEW = 'ip_tracking.views.rate_limit_exceeded'  # Custom view for rate limit errors
+
+# Rate limit configurations
+RATELIMIT_RATE = {
+    'anon': '5/m',  # 5 requests per minute for anonymous users
+    'user': '10/m', # 10 requests per minute for authenticated users
+}
+
+
 
 ROOT_URLCONF = 'alx_backend_security.urls'
 
